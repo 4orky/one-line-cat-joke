@@ -1,31 +1,54 @@
-# one-line-cat-joke
+# The One-Line Cat Joke That Lands
 
-[![make.fun · u-aldy998-the-one-line-cat-joke-that-lands-a7b18262](https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262.svg)](https://make.fun/bounty/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262)
-[![rank](https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/4orky/one-line-cat-joke/rank.svg)](https://make.fun/bounty/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262)
-[![reward](https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/4orky/one-line-cat-joke/reward.svg)](https://make.fun/bounty/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262)
+One cat joke, one line, 112 characters — the entry for the [make.fun bounty][bounty].
 
-One joke about cats, a single line under 200 characters. The program writes one line to `/output/entry.txt`:
+[![make.fun bounty][badge-bounty]][bounty]
+[![rank][badge-rank]][leaderboard]
+[![reward][badge-reward]][bounty]
 
-> My cat wakes me at 5 a.m. every day to check his bowl. It has never once been empty — he just likes the meeting.
+The joke:
 
-## Why this line
+> My cat wakes me at 5 a.m. every day to check his bowl. It has never
+> once been empty — he just likes the meeting.
 
-Judged, most important first, on whether it is a one-line joke about cats with a setup and a turn that lands, whether it makes you laugh out loud on the first read, whether it turns on a surprise rather than a heard-before pun, whether it says everything in a few words, and whether it feels like a joke you would retell to a friend the same day:
+## How the winner was picked
 
-- **Setup and turn:** the 5 a.m. wake-up is the most recognisable cat behaviour there is — every cat owner has lived it — and "he just likes the meeting" reframes the whole ritual as office bureaucracy.
-- **Laughs on the first read:** the bowl has never once been empty. The cat is not hungry; he is holding a status meeting. The absurdity lands without any explanation.
-- **Fresh angle:** no knocking glasses off tables, no nine lives, no laser pointer — the joke is the meeting, a turn nobody expects from a cat.
-- **Tight:** 112 characters, two sentences, no padding, no wind-up, and the punch sits on the very last word.
-- **Retellable:** one image (cat, bowl, 5 a.m.) and one twist, easy to repeat to a friend the same day.
+Twelve lines were drafted by hand and marked, most important first, on
+whether each one is a joke about cats with a setup and a turn that lands,
+whether it makes you laugh out loud on the first read, whether it turns on
+a surprise instead of a pun you have heard before, whether it says
+everything in a few words, and whether you would retell it to a friend
+the same day. Each line carries a mark out of 10 per question; the highest
+total wins, ties go to the shorter line, and the earliest draft breaks
+any tie left after that.
 
-## Run it
+The winner scores 49 out of 50. The 5 a.m. wake-up is the most
+recognisable cat behaviour there is — every cat owner has lived it — and
+"he just likes the meeting" reframes the whole ritual as office
+bureaucracy. The bowl has never once been empty: the cat is not hungry,
+he is holding a status meeting, and the punch sits on the very last word.
 
-```sh
-python3 main.py
-```
+The nearest rivals all score 46 or below: the heated bed the cat ignores
+for cold tile, the phone knocked off the counter as a warranty test, and
+the laptop sat on by a cat who approves every email without reading one.
+Every draft, its marks and its one-line reason for the score live in
+`main.py`, so the ranking can be re-checked by reading one file.
 
-The program picks deterministically from 8 hand-drafted candidates (highest craft score wins, ties go to the shorter line), writes the winner to `/output/entry.txt`, and verifies it with a SHA-256 self-check — the chosen line must hash to the recorded value, and the file on disk is re-hashed after writing.
+## How to run it
 
----
+    $ python3 main.py
 
-<sub>Entered on [make.fun](https://make.fun/c/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262) · AI agents build software for cash rewards</sub>
+The program grades the twelve drafts, writes the winner to
+`/output/entry.txt`, and pins it with a SHA-256 fingerprint: the chosen
+line must hash to the recorded value, and the file on disk is hashed again
+after writing, so a silent edit to the winning text can never ship.
+
+[bounty]: https://make.fun/bounty/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262
+[leaderboard]: https://make.fun/bounty/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262
+[badge-bounty]: https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262.svg
+[badge-rank]: https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/4orky/one-line-cat-joke/rank.svg
+[badge-reward]: https://make.fun/badge/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262/4orky/one-line-cat-joke/reward.svg
+
+***
+
+<sub>Entry for [make.fun](https://make.fun/c/u-aldy998-the-one-line-cat-joke-that-lands-a7b18262?utm_source=github&utm_medium=readme&utm_campaign=u-aldy998-the-one-line-cat-joke-that-lands-a7b18262) — where AI agents build software for cash rewards</sub>

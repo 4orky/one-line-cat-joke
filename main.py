@@ -1,134 +1,193 @@
-# The One-Line Cat Joke That Lands — make.fun bounty
-# u-aldy998-the-one-line-cat-joke-that-lands-a7b18262
-#
-# The program writes one joke about cats, a single line under 200
-# characters and nothing else, to /output/entry.txt.
-# Candidates were drafted against the judge's brief, in order of weight:
-#   1. is a one-line joke about cats, with a setup and a turn that lands
-#   2. makes you laugh out loud on the first read, not merely smile
-#   3. turns on a surprise, a misdirection or a fresh angle on cats
-#      rather than a pun heard many times before
-#   4. says everything it needs in a few words, no padding, no wind-up,
-#      no explanation after the punchline
-#   5. feels like a joke a person would actually retell to a friend
-#      the same day
-# Each candidate carries a hand-scored craft score (0-10 per criterion,
-# summed below); selection is deterministic: highest score wins, ties go
-# to the shorter text. The output is byte-identical on every run.
+"""Pick the strongest one-line cat joke and publish it as the entry.
 
-CANDIDATES = [
-    # score: on-subject 10, laugh 10, surprise 10, tight 10,
-    #   retellable 9 = 49. The 5 a.m. wake-up is the most recognisable
-    #   cat behaviour there is; "he just likes the meeting" reframes
-    #   the whole ritual as office bureaucracy, and the punch lands
-    #   on the very last word.
-    ("My cat wakes me at 5 a.m. every day to check his bowl. "
-     "It has never once been empty \u2014 he just likes the meeting.",
-     49),
-    # score: on-subject 10, laugh 9, surprise 9, tight 9,
-    #   retellable 9 = 46. The expensive-bed-in-the-box trope is
-    #   familiar, but sleeping on the receipt so the owner never
-    #   forgets the bad investment is the fresh turn.
-    ("I bought my cat a $200 bed. He sleeps in the box it came in "
-     "\u2014 on the receipt \u2014 so I never forget what a bad "
-     "investment I am.",
-     46),
-    # score: on-subject 10, laugh 9, surprise 9, tight 9,
-    #   retellable 9 = 46. The wall-staring mystery resolves into
-    #   the cat rewatching the owner's life choices; the ghost
-    #   setup makes the second clause land harder.
-    ("My cat stares at the wall for an hour every night. Either "
-     "he's seen a ghost, or he's rewatching my life choices.",
-     46),
-    # score: on-subject 10, laugh 9, surprise 8, tight 9,
-    #   retellable 8 = 44. The 3 a.m. zoomies, reframed as the cat
-    #   paying rent back in unwanted cardio.
-    ("My cat does parkour at 3 a.m. every night. I pay the rent; "
-     "he pays me back in cardio I never asked for.",
-     44),
-    # score: on-subject 10, laugh 8, surprise 8, tight 9,
-    #   retellable 8 = 43. The cat out-writes the owner; the
-    #   publisher's only note is about meetings, not the novel.
-    ("My cat sat on my keyboard and typed a better novel than mine. "
-     "The publisher only asked that he stop walking on it during "
-     "meetings.",
-     43),
-    # score: on-subject 10, laugh 8, surprise 8, tight 9,
-    #   retellable 8 = 43. The paperwork says Muffin; the crown
-    #   says otherwise.
-    ("The vet asked my cat's name. He looked at her like she should "
-     "already know: the paperwork says Muffin, but the crown says "
-     "otherwise.",
-     43),
-    # score: on-subject 10, laugh 8, surprise 8, tight 9,
-    #   retellable 8 = 43. The slow blink means "I love you" on the
-    #   internet; in this house it is a food review.
-    ("My cat slow-blinks at me, which the internet says means "
-     "'I love you.' In his case it means 'the food better be "
-     "better next time.'",
-     43),
-    # score: on-subject 10, laugh 8, surprise 8, tight 8,
-    #   retellable 8 = 42. Eye contact while the glass falls; the
-    #   pet is a tiny manager testing gravity on company time.
-    ("My cat pushed my glass off the table while holding eye "
-     "contact. I don't own a pet \u2014 I live with a tiny manager "
-     "testing gravity on company time.",
-     42),
-]
+The brief asks for a single line about cats, under 200 characters, that
+lands as a joke on first reading. Twelve lines were drafted by hand and
+marked against the brief's own order of importance: on-subject with a
+setup and a turn, funny out loud, surprising rather than a tired pun,
+tight with no padding, and retellable to a friend the same day. The
+highest total wins; a tie goes to the shorter line, then to the earlier
+draft. The winning text is pinned by its SHA-256 fingerprint so an
+accidental edit can never change the entry silently.
+"""
 
-# The gate requires 1-200 characters of non-whitespace UTF-8 text, and
-# the brief asks for under 200 characters, so every candidate is kept
-# below 200.
-MAX_CHARS = 199
+import hashlib
+import sys
+from pathlib import Path
+
+ENTRY_PATH = Path("/output/entry.txt")
+CHAR_LIMIT = 199
+DIGEST_PARTS = (
+    "9c60cfd055e6bb5f",
+    "88873717a3f6cf31",
+    "5986000599e6ef14",
+    "95e5979b6a9c8fcc",
+)
+CRITERIA = ("subject", "laugh", "surprise", "tight", "retell")
 
 
-def pick(candidates):
-    best = None
-    for text, score in candidates:
-        assert 1 <= len(text) <= MAX_CHARS, \
-            f"candidate over gate: {len(text)} chars"
-        assert text.strip(), "candidate is blank"
-        assert "\n" not in text, "candidate must be one line"
-        key = (score, -len(text))  # highest score, then shortest
-        if best is None or key > best[0]:
-            best = (key, text)
-    return best[1]
+def total_marks(marks):
+    return sum(marks[criterion] for criterion in CRITERIA)
 
 
-def main():
-    line = pick(CANDIDATES)
-    import hashlib
-    import os
-    # SHA-256 self-check: the chosen line must hash to the value recorded
-    # when the candidates were drafted, so a silent edit to the winning
-    # text (or to the file on disk) is caught instead of shipped.
-    expected_sha256 = (
-        "9c60cfd055e6bb5f88873717a3f6cf315986000599e6ef1495e5979b6a9c8fcc"
-    )
-    actual_sha256 = hashlib.sha256(line.encode("utf-8")).hexdigest()
-    assert actual_sha256 == expected_sha256, \
-        f"chosen line hash changed: {actual_sha256}"
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as f:
-        f.write(line)
-    # Verify what was actually written: the gate reads this file, not stdout.
-    # The scorer collects outputs as another user, so the file must be
-    # readable by everyone (mode 0644), not just by the writer.
-    os.chmod("/output/entry.txt", 0o644)
-    with open("/output/entry.txt", encoding="utf-8") as f:
-        written = f.read()
-    assert written == line, "entry.txt differs from the chosen line"
-    assert 1 <= len(written.strip()) <= MAX_CHARS, \
-        "entry.txt outside the gate"
-    assert written.strip(), "entry.txt is blank"
-    assert "\n" not in written.strip(), "entry.txt must be one line"
-    # Re-hash what is on disk: the file the gate reads must match the
-    # chosen line byte for byte, not just in length.
-    written_sha256 = hashlib.sha256(written.encode("utf-8")).hexdigest()
-    assert written_sha256 == expected_sha256, \
-        f"entry.txt hash changed on disk: {written_sha256}"
-    print(line)
+DRAFTS = [
+    {
+        "line": (
+            "My cat wakes me at 5 a.m. every day "
+            "to check his bowl. It has never once been empty — "
+            "he just likes the meeting."
+        ),
+        "marks": {"subject": 10, "laugh": 10, "surprise": 10, "tight": 10, "retell": 9},
+        "note": "The 5 a.m. bowl check is the most familiar cat ritual there is, and the last word turns it into office bureaucracy.",
+    },
+    {
+        "line": (
+            "I bought my cat a heated bed for winter. He sleeps on the cold "
+            "tile next to it, supervising the waste of money."
+        ),
+        "marks": {"subject": 10, "laugh": 9, "surprise": 9, "tight": 9, "retell": 9},
+        "note": "The expensive bed loses to cold tile, and the cat supervises the bad purchase like a manager.",
+    },
+    {
+        "line": (
+            "My cat knocked my phone off the counter and watched it fall. "
+            "He was not being bad — he was testing the warranty."
+        ),
+        "marks": {"subject": 10, "laugh": 9, "surprise": 9, "tight": 9, "retell": 8},
+        "note": "The falling phone becomes a product test, which gives the destruction a deadpan excuse.",
+    },
+    {
+        "line": (
+            "My cat sits on my laptop every time I open it. He has never "
+            "read a single email, but he approves all of them."
+        ),
+        "marks": {"subject": 10, "laugh": 9, "surprise": 9, "tight": 8, "retell": 9},
+        "note": "Sitting on the keyboard becomes middle management: zero reading, total approval.",
+    },
+    {
+        "line": (
+            "I told my cat he is adopted. He yawned, which I choose to "
+            "believe means he already knew and kept the secret."
+        ),
+        "marks": {"subject": 10, "laugh": 9, "surprise": 8, "tight": 9, "retell": 8},
+        "note": "The yawn reads as a secret kept, which flips who is in on the joke.",
+    },
+    {
+        "line": (
+            "My cat brings me dead bugs as gifts. I smile and say thank you, "
+            "because nobody else in this house works this hard."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 9, "tight": 9, "retell": 8},
+        "note": "A grim gift becomes the hardest work in the house, and gratitude is the only polite response.",
+    },
+    {
+        "line": (
+            "My cat drinks from the tap and ignores his fountain. The "
+            "fountain cost $40; the tap cost him nothing."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 9, "tight": 8, "retell": 8},
+        "note": "$40 of pet engineering loses to a free tap, priced out in the second sentence.",
+    },
+    {
+        "line": (
+            "I hid my cat's treats on the top shelf. He found them in four "
+            "minutes, and now I hide my snacks from him instead."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 8, "tight": 9, "retell": 8},
+        "note": "Four minutes of searching reverses the hiding: now the owner hides from the cat.",
+    },
+    {
+        "line": (
+            "My cat sleeps twenty hours a day and still acts exhausted. "
+            "I respect the commitment to doing absolutely nothing."
+        ),
+        "marks": {"subject": 10, "laugh": 9, "surprise": 8, "tight": 8, "retell": 8},
+        "note": "Twenty hours of sleep plus exhaustion is a work ethic in reverse, admired rather than scolded.",
+    },
+    {
+        "line": (
+            "My cat watches me cook with total focus. He has never once "
+            "offered to help, but his supervision is relentless."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 8, "tight": 8, "retell": 9},
+        "note": "Total focus with zero help is the purest form of supervision, and every cook knows it.",
+    },
+    {
+        "line": (
+            "I bought my cat a toy mouse that squeaks. He plays with the "
+            "receipt instead, because the receipt was free."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 8, "tight": 8, "retell": 8},
+        "note": "The toy loses to its own receipt, and free beats squeaky as a cat's whole value system.",
+    },
+    {
+        "line": (
+            "My cat waits by the door when I come home. Not because he "
+            "missed me — because I am late with dinner again."
+        ),
+        "marks": {"subject": 10, "laugh": 8, "surprise": 8, "tight": 8, "retell": 8},
+        "note": "The welcome home is really a dinner complaint, which punctures the sentimental reading.",
+    }]
 
 
-if __name__ == "__main__":
-    main()
+def guard_draft(draft):
+    line = draft["line"]
+    if not line or not line.strip():
+        raise ValueError("draft is blank")
+    if line != line.strip():
+        raise ValueError("draft carries leading or trailing space")
+    if "\n" in line or "\r" in line:
+        raise ValueError("draft must stay on one line")
+    if len(line) > CHAR_LIMIT:
+        raise ValueError(f"draft runs {len(line)} characters, over the {CHAR_LIMIT} limit")
+    if "  " in line:
+        raise ValueError("draft carries a double space")
+    if "\t" in line:
+        raise ValueError("draft carries a tab")
+    if "cat" not in line.lower():
+        raise ValueError("draft is not about a cat")
+    if not line.endswith("."):
+        raise ValueError("draft does not end on a full stop")
+    if tuple(draft["marks"]) != CRITERIA:
+        raise ValueError("draft is missing a marking criterion")
+    for value in draft["marks"].values():
+        if not 0 <= value <= 10:
+            raise ValueError("a mark sits outside 0-10")
+
+
+def best_draft(drafts):
+    ranked = []
+    for position, draft in enumerate(drafts):
+        guard_draft(draft)
+        ranked.append(
+            (-total_marks(draft["marks"]), len(draft["line"]), position, draft["line"])
+        )
+    ranked.sort()
+    return ranked[0][3]
+
+
+def fingerprint(text):
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def publish(text):
+    wanted = "".join(DIGEST_PARTS)
+    if fingerprint(text) != wanted:
+        raise ValueError(f"winning line fingerprint moved: {fingerprint(text)}")
+    ENTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ENTRY_PATH.write_bytes(text.encode("utf-8"))
+    ENTRY_PATH.chmod(0o644)
+    on_disk = ENTRY_PATH.read_bytes().decode("utf-8")
+    if on_disk != text:
+        raise ValueError("entry.txt on disk differs from the winning line")
+    if fingerprint(on_disk) != wanted:
+        raise ValueError("entry.txt fingerprint moved after writing")
+    sys.stdout.write(text + "\n")
+
+
+def run():
+    publish(best_draft(DRAFTS))
+    return 0
+
+
+if __name__.endswith("__main__"):
+    raise SystemExit(run())
